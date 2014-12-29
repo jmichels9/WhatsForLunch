@@ -1,7 +1,6 @@
 package net.jmichels.whatsforlunch;
 
 import java.util.ArrayList;
-import java.util.zip.DeflaterInputStream;
 
 /**
  * Created by Jay on 12/28/2014.
