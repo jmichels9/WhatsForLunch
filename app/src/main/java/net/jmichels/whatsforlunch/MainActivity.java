@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
-
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -20,7 +19,7 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title.
      */
     private CharSequence mTitle;
-    private DiningHallFragment mFragment;
+    private DiningHallFragment mDiningHallFragment;
     private boolean firstRun;
 
     @Override
@@ -37,25 +36,29 @@ public class MainActivity extends ActionBarActivity
         drawer.setDrawerListener(new MainDrawerListener());
 
         firstRun = true;
+
+        // Reset the dates for the picker
+        getPreferences(MODE_PRIVATE).edit().remove("menuYear").remove("menuMonth").remove("menuDay").commit();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         if(firstRun) {
             setTitle(mTitle);
-            mFragment.fetchMenu();
+            mDiningHallFragment.fetchMenu();
             firstRun = false;
         }
-}
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
-            mFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
-            fragmentManager.beginTransaction().replace(R.id.container, mFragment).commit();
+            mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
+            fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment).commit();
         }
     }
 
@@ -91,7 +94,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public DiningHallFragment getDiningHallFragment() {
-        return mFragment;
+        return mDiningHallFragment;
     }
 
     public CharSequence getDiningHallTitle() {
