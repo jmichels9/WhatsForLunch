@@ -1,11 +1,18 @@
 package net.jmichels.whatsforlunch;
 
+import android.app.ActionBar;
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.DatePicker;
+
+import java.util.Calendar;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -19,9 +26,7 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title.
      */
     private CharSequence mTitle;
-    private DiningHall mDiningHall;
-    private TabbedFragment mTabbedFragment;
-    private boolean firstRun;
+    private DiningHallFragment mDiningHallFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,21 +41,21 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer,drawer);
         drawer.setDrawerListener(new MainDrawerListener());
 
-        firstRun = true;
-
         // Reset the dates for the picker
         getPreferences(MODE_PRIVATE).edit().remove("menuYear").remove("menuMonth").remove("menuDay").commit();
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
 
-        /*if(firstRun) {
-            setTitle(mTitle);
-            mDiningHallFragment.fetchMenu();
-            firstRun = false;
-        }*/
+        // Set the subtitle
+        Calendar rightNow = Calendar.getInstance();
+        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+        final int year = settings.getInt("menuYear",rightNow.get(Calendar.YEAR));
+        final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
+        final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+        getSupportActionBar().setSubtitle((month+1) + "/" + day + "/" + year);
     }
 
     @Override
@@ -58,14 +63,14 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
-            mDiningHall = Helpers.diningHalls[position];
-            mTabbedFragment = TabbedFragment.newInstance();
-            fragmentManager.beginTransaction().replace(R.id.container, mTabbedFragment).commit();
+            mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
+            fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment).commit();
         }
     }
 
     public void onSectionAttached(DiningHall diningHall) {
         mTitle = diningHall.getName();
+        setTitle(mTitle);
     }
 
     @Override
@@ -82,26 +87,49 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (item.getItemId() == R.id.action_pick_date) {
+            showDatePicker();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public DiningHall getDiningHall() {
-        return mDiningHall;
-    }
-
-    public TabbedFragment getTabbedFragment() { return mTabbedFragment; }
+    public DiningHallFragment getDiningHallFragment() { return mDiningHallFragment; }
 
     public CharSequence getDiningHallTitle() {
         return mTitle;
+    }
+
+    private void showDatePicker() {
+        // Get the last input date or use today
+        Calendar rightNow = Calendar.getInstance();
+        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+        final int year = settings.getInt("menuYear",rightNow.get(Calendar.YEAR));
+        final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
+        final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+
+        DatePickerDialog dpd = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+                        // save the input date in shared prefs
+                        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putInt("menuYear", year);
+                        editor.putInt("menuMonth", monthOfYear);
+                        editor.putInt("menuDay", dayOfMonth);
+
+                        // Commit the edits!
+                        editor.commit();
+
+                        getSupportActionBar().setSubtitle((monthOfYear+1) + "/" + dayOfMonth + "/" + year);
+
+                        getDiningHallFragment().fetchMenu();
+                    }
+                }, year, month, day);
+        dpd.show();
     }
 }

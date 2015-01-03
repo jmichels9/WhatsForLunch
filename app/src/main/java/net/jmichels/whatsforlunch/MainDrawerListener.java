@@ -1,6 +1,5 @@
 package net.jmichels.whatsforlunch;
 
-import android.content.Context;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 
@@ -37,8 +36,8 @@ public class MainDrawerListener implements DrawerLayout.DrawerListener {
         if(title == null) {
             title = currentTitle;
         } else if(!currentTitle.equals(title)) {
-            TabbedFragment current = activity.getTabbedFragment();
-            current.getActiveTab().fetchMenu();
+            DiningHallFragment current = activity.getDiningHallFragment();
+            current.fetchMenu();
             title = currentTitle;
         }
     }
