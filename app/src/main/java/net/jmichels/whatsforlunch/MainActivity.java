@@ -19,7 +19,8 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title.
      */
     private CharSequence mTitle;
-    private DiningHallFragment mDiningHallFragment;
+    private DiningHall mDiningHall;
+    private TabbedFragment mTabbedFragment;
     private boolean firstRun;
 
     @Override
@@ -57,8 +58,9 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
-            mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
-            fragmentManager.beginTransaction().replace(R.id.container, TabbedFragment.newInstance(), TabbedFragment.TAG).commit();
+            mDiningHall = Helpers.diningHalls[position];
+            mTabbedFragment = TabbedFragment.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.container, mTabbedFragment).commit();
         }
     }
 
@@ -93,9 +95,11 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public DiningHallFragment getDiningHallFragment() {
-        return mDiningHallFragment;
+    public DiningHall getDiningHall() {
+        return mDiningHall;
     }
+
+    public TabbedFragment getTabbedFragment() { return mTabbedFragment; }
 
     public CharSequence getDiningHallTitle() {
         return mTitle;

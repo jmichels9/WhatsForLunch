@@ -28,6 +28,7 @@ public class DiningHallFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_DINING_HALL = "dining_hall";
+    private static final String ARG_MEAL = "dining_hall_meal";
 
     private View mView;
 
@@ -35,10 +36,11 @@ public class DiningHallFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static DiningHallFragment newInstance(DiningHall diningHall) {
+    public static DiningHallFragment newInstance(DiningHall diningHall, Meal meal) {
         DiningHallFragment fragment = new DiningHallFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_DINING_HALL, diningHall);
+        args.putSerializable(ARG_MEAL, meal);
         fragment.setArguments(args);
         return fragment;
     }
@@ -114,5 +116,9 @@ public class DiningHallFragment extends Fragment {
 
         TextView diningHallTextView = (TextView)mView.findViewById(R.id.diningHallTextView);
         diningHallTextView.setText("Loading menu data...");
+    }
+
+    public enum Meal {
+        Breakfast, Lunch, Dinner
     }
 }

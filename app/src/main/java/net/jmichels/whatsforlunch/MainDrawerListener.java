@@ -37,8 +37,8 @@ public class MainDrawerListener implements DrawerLayout.DrawerListener {
         if(title == null) {
             title = currentTitle;
         } else if(!currentTitle.equals(title)) {
-            DiningHallFragment current = activity.getDiningHallFragment();
-            current.fetchMenu();
+            TabbedFragment current = activity.getTabbedFragment();
+            current.getActiveTab().fetchMenu();
             title = currentTitle;
         }
     }
