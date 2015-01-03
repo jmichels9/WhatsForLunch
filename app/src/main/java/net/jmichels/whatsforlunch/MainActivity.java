@@ -45,11 +45,11 @@ public class MainActivity extends ActionBarActivity
     protected void onStart() {
         super.onStart();
 
-        if(firstRun) {
+        /*if(firstRun) {
             setTitle(mTitle);
             mDiningHallFragment.fetchMenu();
             firstRun = false;
-        }
+        }*/
     }
 
     @Override
@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
             mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
-            fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, TabbedFragment.newInstance(), TabbedFragment.TAG).commit();
         }
     }
 

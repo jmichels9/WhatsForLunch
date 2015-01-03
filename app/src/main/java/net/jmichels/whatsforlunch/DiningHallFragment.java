@@ -55,7 +55,7 @@ public class DiningHallFragment extends Fragment {
         final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
         final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
 
-        mView = inflater.inflate(R.layout.fragment_main, container, false);
+        mView = inflater.inflate(R.layout.fragment_dining_hall, container, false);
 
         final Button dateButton = (Button) mView.findViewById(R.id.date_button);
         dateButton.setText((month+1) + "/"
