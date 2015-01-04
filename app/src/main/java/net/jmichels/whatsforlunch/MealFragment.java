@@ -14,22 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * A placeholder fragment containing a simple view.
- */
-public class MealFragment extends Fragment implements OnRefreshListener {
+public class MealFragment extends Fragment {
 
-    private static final String ARGS_MEAL = "dining_hall_meal";
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static MealFragment newInstance(int meal) {
+    public static MealFragment newInstance(String mealText) {
         MealFragment fragment = new MealFragment();
         Bundle args = new Bundle();
-        Meal mealEnum = Meal.values()[meal];
-        args.putSerializable(ARGS_MEAL, mealEnum);
+        args.putSerializable(Helpers.MEAL_FRAGMENT_STRING, mealText);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,32 +46,14 @@ public class MealFragment extends Fragment implements OnRefreshListener {
         }
     }
 
-    public void onRefresh() {
-        View v = getView();
-
-        if(v != null) {
-            updateMealTextView(v);
-        }
-    }
-
-    private void updateMealTextView(View v) {
+    public void updateMealTextView(View v) {
         TextView meal = (TextView)v.findViewById(R.id.mealTextView);
 
-        SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        switch((Meal)getArguments().getSerializable(ARGS_MEAL)) {
-            case Breakfast:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_BREAKFAST,Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
-            case Lunch:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_LUNCH, Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
-            case Dinner:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_DINNER,Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
+        String mealText = getArguments().getString(Helpers.MEAL_FRAGMENT_STRING);
+        if(mealText == null || mealText.length() <= 0) {
+            mealText = Helpers.MENU_UNAVAILABLE_MESSAGE;
         }
-    }
 
-    public enum Meal {
-        Breakfast, Lunch, Dinner
+        meal.setText(Html.fromHtml(mealText));
     }
 }

@@ -1,13 +1,7 @@
 package net.jmichels.whatsforlunch;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.text.Html;
-import android.view.View;
-import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,20 +30,16 @@ public class FetchMenuTask extends AsyncTask<String,Integer,String[]> {
 
     boolean showDialog;
     ProgressDialog dialog;
-    Activity activity;
-    View view;
-    int meal;
+    DiningHallFragment diningHallFragment;
 
-    public FetchMenuTask(Activity activity, View view, int meal) {
-        this.view = view;
-        this.meal = meal;
-        this.activity = activity;
-        if(activity == null) {
+    public FetchMenuTask(DiningHallFragment diningHallFragment) {
+        this.diningHallFragment = diningHallFragment;
+        if(this.diningHallFragment.getActivity() == null) {
             showDialog = false;
             dialog = null;
         } else {
             showDialog = true;
-            dialog = new ProgressDialog(activity);
+            dialog = new ProgressDialog(diningHallFragment.getActivity());
         }
     }
 
@@ -163,15 +153,12 @@ public class FetchMenuTask extends AsyncTask<String,Integer,String[]> {
             content[0] = content[1] = content[2] = Helpers.MENU_UNAVAILABLE_MESSAGE;
         }
 
-        SharedPreferences settings = activity.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(Helpers.CURRENT_BREAKFAST, content[0]);
-        editor.putString(Helpers.CURRENT_LUNCH, content[1]);
-        editor.putString(Helpers.CURRENT_DINNER, content[2]);
-        editor.commit();
+        MealFragment breakfast = MealFragment.newInstance(content[0]);
+        MealFragment lunch = MealFragment.newInstance(content[1]);
+        MealFragment dinner = MealFragment.newInstance(content[2]);
 
-        TextView diningHallTextView = (TextView)view.findViewById(R.id.mealTextView);
-        diningHallTextView.setText(Html.fromHtml(content[meal]));
+        diningHallFragment.getPagerAdapter().setPagerItems(new MealFragment[] { breakfast, lunch, dinner });
+        diningHallFragment.getPagerAdapter().notifyDataSetChanged();
 
         if (showDialog && dialog.isShowing()) {
             dialog.dismiss();

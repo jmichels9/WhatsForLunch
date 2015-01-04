@@ -8,16 +8,16 @@ import java.util.ArrayList;
 public class Helpers {
     public static final String CLIENT_URL = "http://menu.unl.edu/";
     public static final String FETCHING_MENU = "Fetching menu...";
+    public static final String MENU_NOT_FETCHED = "Waiting for a connection to get the menu.";
 
-    public static final String CURRENT_BREAKFAST = "currentBreakfast";
-    public static final String CURRENT_LUNCH = "currentLunch";
-    public static final String CURRENT_DINNER = "currentDinner";
+    public static final String BREAKFAST = "Breakfast";
+    public static final String LUNCH = "Lunch";
+    public static final String DINNER = "Dinner";
 
     public static final String MENU_UNAVAILABLE_MESSAGE = "Sorry, but there was a problem fetching" +
             " the menu. Meals might not be served at this time. Please try another date.";
     public static final String MENU_CLIENT_ERROR = "There was a problem with the client protocol.";
     public static final String MENU_POST_ERROR = "There was an issue with the POST request";
-    public static final String MENU_LOADING_DATA = "Loading menu data...";
 
     public static final String CLIENT_PARAM_MONTH = "Month";
     public static final String CLIENT_PARAM_DAY = "Day";
@@ -32,6 +32,7 @@ public class Helpers {
     public static final String MENU_MONTH = "menuMonth";
     public static final String MENU_DAY = "menuDay";
 
+    public static final String MEAL_FRAGMENT_STRING = "mealText";
     public static final String DINING_HALL_POSITION = "diningHallPosition";
     public static final String FIRST_RUN = "firstRun";
 

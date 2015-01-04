@@ -1,27 +1,22 @@
 package net.jmichels.whatsforlunch;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class DiningHallFragment extends Fragment {
 
     private static final String ARG_DINING_HALL = "dining_hall";
 
-    MealsPagerAdapter mMealsPagerAdapter;
+    MealPagerAdapter mMealPagerAdapter;
     ViewPager mViewPager;
 
     public static DiningHallFragment newInstance(DiningHall diningHall) {
@@ -41,30 +36,14 @@ public class DiningHallFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dining_hall, container, false);
 
-        mMealsPagerAdapter = new MealsPagerAdapter(getChildFragmentManager());
+        MealFragment breakfast = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+        MealFragment lunch = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+        MealFragment dinner = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+
+        mMealPagerAdapter = new MealPagerAdapter(getChildFragmentManager(), new MealFragment[] { breakfast, lunch, dinner });
 
         mViewPager = (ViewPager) v.findViewById(R.id.pager);
-        mViewPager.setAdapter(mMealsPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // Auto-generated
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                ViewPager pager = (ViewPager) getView().findViewById(R.id.pager);
-                FragmentStatePagerAdapter a = (FragmentStatePagerAdapter) pager.getAdapter();
-                MealFragment meal = (MealFragment) a.instantiateItem(pager,position);
-                meal.onRefresh();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // Auto-generated
-            }
-        });
+        mViewPager.setAdapter(mMealPagerAdapter);
 
         return v;
     }
@@ -78,18 +57,8 @@ public class DiningHallFragment extends Fragment {
         int month = settings.getInt(Helpers.MENU_MONTH, rightNow.get(Calendar.MONTH));
         int day = settings.getInt(Helpers.MENU_DAY, rightNow.get(Calendar.DAY_OF_MONTH));
 
-        // Clear the current menu items
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(Helpers.CURRENT_BREAKFAST,Helpers.FETCHING_MENU);
-        editor.putString(Helpers.CURRENT_LUNCH,Helpers.FETCHING_MENU);
-        editor.putString(Helpers.CURRENT_DINNER,Helpers.FETCHING_MENU);
-        editor.commit();
-
-        FetchMenuTask fetchMenu = new FetchMenuTask(getActivity(), getView(), mViewPager.getCurrentItem());
-        fetchMenu.execute(String.valueOf(month+1),String.valueOf(day),diningHall.getId().toString());
-
-        TextView diningHallTextView = (TextView)getActiveTab().getView().findViewById(R.id.mealTextView);
-        diningHallTextView.setText(Helpers.MENU_LOADING_DATA);
+        FetchMenuTask fetchMenu = new FetchMenuTask(this);
+        fetchMenu.execute(String.valueOf(month + 1), String.valueOf(day), diningHall.getId().toString());
     }
 
     @Override
@@ -100,56 +69,7 @@ public class DiningHallFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(diningHall);
     }
 
-    public MealFragment getActiveTab() {
-        return (MealFragment) mMealsPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
-    }
-
-    public class MealsPagerAdapter extends FragmentStatePagerAdapter {
-        SparseArray<Fragment> registeredFragments = new SparseArray<>();
-
-        public MealsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return MealFragment.newInstance(position);
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_breakfast).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_lunch).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_dinner).toUpperCase(l);
-            }
-            return null;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Fragment fragment = (Fragment) super.instantiateItem(container, position);
-            registeredFragments.put(position, fragment);
-            return fragment;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            registeredFragments.remove(position);
-            super.destroyItem(container, position, object);
-        }
-
-        public Fragment getRegisteredFragment(int position) {
-            return registeredFragments.get(position);
-        }
+    public MealPagerAdapter getPagerAdapter() {
+        return mMealPagerAdapter;
     }
 }

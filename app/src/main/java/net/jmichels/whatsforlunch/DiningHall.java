@@ -26,10 +26,6 @@ public class DiningHall implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -40,9 +36,5 @@ public class DiningHall implements Serializable {
 
     public String getShortName() {
         return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
     }
 }

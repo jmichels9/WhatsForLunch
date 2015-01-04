@@ -2,9 +2,6 @@
 <resources>
 
     <string name="app_name">What\'s For Lunch</string>
-    <string name="title_breakfast">Breakfast</string>
-    <string name="title_lunch">Lunch</string>
-    <string name="title_dinner">Dinner</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_pick_date">Pick Date</string>
