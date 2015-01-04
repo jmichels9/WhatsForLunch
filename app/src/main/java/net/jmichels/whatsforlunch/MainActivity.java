@@ -1,6 +1,5 @@
 package net.jmichels.whatsforlunch;
 
-import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -42,7 +41,13 @@ public class MainActivity extends ActionBarActivity
         drawer.setDrawerListener(new MainDrawerListener());
 
         // Reset the dates for the picker
-        getPreferences(MODE_PRIVATE).edit().remove("menuYear").remove("menuMonth").remove("menuDay").commit();
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        int diningHallPosition = settings.getInt(Helpers.DINING_HALL_POSITION, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear().commit();
+        editor.putInt(Helpers.DINING_HALL_POSITION, diningHallPosition);
+        editor.putBoolean(Helpers.FIRST_RUN,true);
+        editor.commit();
     }
 
     @Override
@@ -52,9 +57,9 @@ public class MainActivity extends ActionBarActivity
         // Set the subtitle
         Calendar rightNow = Calendar.getInstance();
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        final int year = settings.getInt("menuYear",rightNow.get(Calendar.YEAR));
-        final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
-        final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+        final int year = settings.getInt(Helpers.MENU_YEAR, rightNow.get(Calendar.YEAR));
+        final int month = settings.getInt(Helpers.MENU_MONTH, rightNow.get(Calendar.MONTH));
+        final int day = settings.getInt(Helpers.MENU_DAY, rightNow.get(Calendar.DAY_OF_MONTH));
         getSupportActionBar().setSubtitle((month+1) + "/" + day + "/" + year);
     }
 
@@ -65,6 +70,7 @@ public class MainActivity extends ActionBarActivity
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
             mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
             fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment).commit();
+            getPreferences(MODE_PRIVATE).edit().putInt(Helpers.DINING_HALL_POSITION, position).commit();
         }
     }
 
@@ -105,9 +111,9 @@ public class MainActivity extends ActionBarActivity
         // Get the last input date or use today
         Calendar rightNow = Calendar.getInstance();
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        final int year = settings.getInt("menuYear",rightNow.get(Calendar.YEAR));
-        final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
-        final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+        final int year = settings.getInt(Helpers.MENU_YEAR,rightNow.get(Calendar.YEAR));
+        final int month = settings.getInt(Helpers.MENU_MONTH, rightNow.get(Calendar.MONTH));
+        final int day = settings.getInt(Helpers.MENU_DAY, rightNow.get(Calendar.DAY_OF_MONTH));
 
         DatePickerDialog dpd = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
@@ -118,9 +124,9 @@ public class MainActivity extends ActionBarActivity
                         // save the input date in shared prefs
                         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putInt("menuYear", year);
-                        editor.putInt("menuMonth", monthOfYear);
-                        editor.putInt("menuDay", dayOfMonth);
+                        editor.putInt(Helpers.MENU_YEAR, year);
+                        editor.putInt(Helpers.MENU_MONTH, monthOfYear);
+                        editor.putInt(Helpers.MENU_DAY, dayOfMonth);
 
                         // Commit the edits!
                         editor.commit();

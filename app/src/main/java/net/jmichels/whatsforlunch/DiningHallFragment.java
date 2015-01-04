@@ -57,17 +57,22 @@ public class DiningHallFragment extends Fragment {
         // Get the last input date or use today
         Calendar rightNow = Calendar.getInstance();
         SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
-        int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+        int month = settings.getInt(Helpers.MENU_MONTH, rightNow.get(Calendar.MONTH));
+        int day = settings.getInt(Helpers.MENU_DAY, rightNow.get(Calendar.DAY_OF_MONTH));
 
-        FetchMenuTask fetchMenu = new FetchMenuTask(getActivity(), this.getView());
+        // Clear the current menu items
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Helpers.CURRENT_BREAKFAST,Helpers.FETCHING_MENU);
+        editor.putString(Helpers.CURRENT_LUNCH,Helpers.FETCHING_MENU);
+        editor.putString(Helpers.CURRENT_DINNER,Helpers.FETCHING_MENU);
+        editor.commit();
+
+
+        FetchMenuTask fetchMenu = new FetchMenuTask(getActivity(), getView(), mViewPager.getCurrentItem());
         fetchMenu.execute(String.valueOf(month+1),String.valueOf(day),diningHall.getId().toString());
 
-        MealFragment test = getActiveTab();
-        View view = test.getView();
-
-        TextView diningHallTextView = (TextView)getActiveTab().getView().findViewById(R.id.diningHallTextView);
-        diningHallTextView.setText("Loading menu data...");
+        TextView diningHallTextView = (TextView)getActiveTab().getView().findViewById(R.id.mealHallTextView);
+        diningHallTextView.setText(Helpers.MENU_LOADING_DATA);
     }
 
     @Override
@@ -91,7 +96,7 @@ public class DiningHallFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return MealFragment.newInstance();
+            return MealFragment.newInstance(position);
         }
 
         @Override
