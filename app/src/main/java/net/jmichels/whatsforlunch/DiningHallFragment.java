@@ -8,8 +8,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class DiningHallFragment extends Fragment {
-
-    public static final String TAG = DiningHallFragment.class.getSimpleName();
 
     private static final String ARG_DINING_HALL = "dining_hall";
 
@@ -47,6 +45,26 @@ public class DiningHallFragment extends Fragment {
 
         mViewPager = (ViewPager) v.findViewById(R.id.pager);
         mViewPager.setAdapter(mMealsPagerAdapter);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Auto-generated
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                ViewPager pager = (ViewPager) getView().findViewById(R.id.pager);
+                FragmentStatePagerAdapter a = (FragmentStatePagerAdapter) pager.getAdapter();
+                MealFragment meal = (MealFragment) a.instantiateItem(pager,position);
+                meal.onRefresh();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Auto-generated
+            }
+        });
 
         return v;
     }
@@ -67,11 +85,10 @@ public class DiningHallFragment extends Fragment {
         editor.putString(Helpers.CURRENT_DINNER,Helpers.FETCHING_MENU);
         editor.commit();
 
-
         FetchMenuTask fetchMenu = new FetchMenuTask(getActivity(), getView(), mViewPager.getCurrentItem());
         fetchMenu.execute(String.valueOf(month+1),String.valueOf(day),diningHall.getId().toString());
 
-        TextView diningHallTextView = (TextView)getActiveTab().getView().findViewById(R.id.mealHallTextView);
+        TextView diningHallTextView = (TextView)getActiveTab().getView().findViewById(R.id.mealTextView);
         diningHallTextView.setText(Helpers.MENU_LOADING_DATA);
     }
 
@@ -87,8 +104,8 @@ public class DiningHallFragment extends Fragment {
         return (MealFragment) mMealsPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
     }
 
-    public class MealsPagerAdapter extends FragmentPagerAdapter {
-        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+    public class MealsPagerAdapter extends FragmentStatePagerAdapter {
+        SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
         public MealsPagerAdapter(FragmentManager fm) {
             super(fm);

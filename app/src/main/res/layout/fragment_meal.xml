@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:text="@string/default_menu_text"
             android:gravity="center"
-            android:id="@+id/mealHallTextView" />
+            android:id="@+id/mealTextView" />
     </ScrollView>
 
 </RelativeLayout>

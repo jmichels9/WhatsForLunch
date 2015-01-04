@@ -17,7 +17,7 @@ import android.widget.TextView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MealFragment extends Fragment {
+public class MealFragment extends Fragment implements OnRefreshListener {
 
     private static final String ARGS_MEAL = "dining_hall_meal";
 
@@ -40,21 +40,7 @@ public class MealFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_meal, container, false);
-        TextView meal = (TextView)v.findViewById(R.id.mealHallTextView);
-
-        SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        switch((Meal)getArguments().getSerializable(ARGS_MEAL)) {
-            case Breakfast:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_BREAKFAST,Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
-            case Lunch:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_LUNCH,Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
-            case Dinner:
-                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_DINNER,Helpers.MENU_UNAVAILABLE_MESSAGE)));
-                break;
-        }
-
+        updateMealTextView(v);
         return v;
     }
 
@@ -67,6 +53,31 @@ public class MealFragment extends Fragment {
             MainActivity activity = (MainActivity) getActivity();
             activity.getDiningHallFragment().fetchMenu();
             settings.edit().putBoolean(Helpers.FIRST_RUN,false).commit();
+        }
+    }
+
+    public void onRefresh() {
+        View v = getView();
+
+        if(v != null) {
+            updateMealTextView(v);
+        }
+    }
+
+    private void updateMealTextView(View v) {
+        TextView meal = (TextView)v.findViewById(R.id.mealTextView);
+
+        SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
+        switch((Meal)getArguments().getSerializable(ARGS_MEAL)) {
+            case Breakfast:
+                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_BREAKFAST,Helpers.MENU_UNAVAILABLE_MESSAGE)));
+                break;
+            case Lunch:
+                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_LUNCH, Helpers.MENU_UNAVAILABLE_MESSAGE)));
+                break;
+            case Dinner:
+                meal.setText(Html.fromHtml(settings.getString(Helpers.CURRENT_DINNER,Helpers.MENU_UNAVAILABLE_MESSAGE)));
+                break;
         }
     }
 

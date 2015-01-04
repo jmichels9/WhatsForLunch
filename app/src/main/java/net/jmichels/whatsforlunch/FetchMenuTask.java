@@ -42,7 +42,7 @@ public class FetchMenuTask extends AsyncTask<String,Integer,String[]> {
 
     public FetchMenuTask(Activity activity, View view, int meal) {
         this.view = view;
-        this.meal= meal;
+        this.meal = meal;
         this.activity = activity;
         if(activity == null) {
             showDialog = false;
@@ -140,10 +140,6 @@ public class FetchMenuTask extends AsyncTask<String,Integer,String[]> {
 
     @Override
     protected void onPostExecute(final String[] success) {
-        if (showDialog && dialog.isShowing()) {
-            dialog.dismiss();
-        }
-
         String[] content = new String[3];
         if(success != null) {
             if(success[0] != null && success[0].toString().length() > 0) {
@@ -174,7 +170,11 @@ public class FetchMenuTask extends AsyncTask<String,Integer,String[]> {
         editor.putString(Helpers.CURRENT_DINNER, content[2]);
         editor.commit();
 
-        TextView diningHallTextView = (TextView)view.findViewById(R.id.mealHallTextView);
+        TextView diningHallTextView = (TextView)view.findViewById(R.id.mealTextView);
         diningHallTextView.setText(Html.fromHtml(content[meal]));
+
+        if (showDialog && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 }

@@ -14,10 +14,12 @@ public class DiningHall implements Serializable {
 
     private Integer id;
     private String name;
+    private String shortName;
 
-    public DiningHall(Integer id, String name) {
+    public DiningHall(Integer id, String name, String shortName) {
         this.id = id;
         this.name = name;
+        this.shortName = shortName;
     }
 
     public String getName() {
@@ -34,5 +36,13 @@ public class DiningHall implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }

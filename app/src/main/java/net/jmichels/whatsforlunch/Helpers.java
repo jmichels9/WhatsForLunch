@@ -35,12 +35,12 @@ public class Helpers {
     public static final String DINING_HALL_POSITION = "diningHallPosition";
     public static final String FIRST_RUN = "firstRun";
 
-    public static final DiningHall selleck = new DiningHall(23, "Selleck");
-    public static final DiningHall abel_sandoz = new DiningHall(22, "Abel/Sandoz");
-    public static final DiningHall hss = new DiningHall(20, "Harper/Schramm/Smith");
-    public static final DiningHall cpn = new DiningHall(24,"Cather/Pound/Neihardt");
-    public static final DiningHall east_cafe = new DiningHall(101,"East Union Cafe & Grill");
-    public static final DiningHall east_deli = new DiningHall(106,"East Union Corner Deli");
+    public static final DiningHall selleck = new DiningHall(23, "Selleck", "selleck");
+    public static final DiningHall abel_sandoz = new DiningHall(22, "Abel/Sandoz", "abelsandoz");
+    public static final DiningHall hss = new DiningHall(20, "Harper/Schramm/Smith", "hss");
+    public static final DiningHall cpn = new DiningHall(24,"Cather/Pound/Neihardt", "cpn");
+    public static final DiningHall east_cafe = new DiningHall(101,"East Union Cafe & Grill", "eastunioncafe");
+    public static final DiningHall east_deli = new DiningHall(106,"East Union Corner Deli", "eastunioncornerdeli");
 
     // List of all the dining halls
     public static final DiningHall[] diningHalls = { selleck, abel_sandoz, hss, cpn, east_cafe, east_deli };

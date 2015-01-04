@@ -69,7 +69,8 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(!Helpers.diningHalls[position].getName().equals(mTitle)) {
             mDiningHallFragment = DiningHallFragment.newInstance(Helpers.diningHalls[position]);
-            fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment).commit();
+            String tag = Helpers.diningHalls[position].getShortName() + "DiningHall";
+            fragmentManager.beginTransaction().replace(R.id.container, mDiningHallFragment, tag).commit();
             getPreferences(MODE_PRIVATE).edit().putInt(Helpers.DINING_HALL_POSITION, position).commit();
         }
     }
