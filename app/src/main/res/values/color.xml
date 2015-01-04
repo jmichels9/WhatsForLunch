@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="menu_item_active">#CC0000</color>
+    <color name="menu_item">#00CCCCCC</color>
+    <color name="green">#008000</color>
+</resources>
