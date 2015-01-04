@@ -1,40 +1,24 @@
 package net.jmichels.whatsforlunch;
 
-/**
- * Created by Jay on 12/28/2014.
- */
+import java.util.Calendar;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.TextView;
 
-import java.util.Calendar;
-
-/**
- * A placeholder fragment containing a simple view.
- */
 public class DiningHallFragment extends Fragment {
-    /**
-     * The fragment argument representing the dining hall for this
-     * fragment.
-     */
+
     private static final String ARG_DINING_HALL = "dining_hall";
 
-    private View mView;
+    MealPagerAdapter mMealPagerAdapter;
+    ViewPager mViewPager;
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
     public static DiningHallFragment newInstance(DiningHall diningHall) {
         DiningHallFragment fragment = new DiningHallFragment();
         Bundle args = new Bundle();
@@ -43,53 +27,38 @@ public class DiningHallFragment extends Fragment {
         return fragment;
     }
 
-    public DiningHallFragment() { }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_dining_hall, container, false);
+
+        MealFragment breakfast = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+        MealFragment lunch = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+        MealFragment dinner = MealFragment.newInstance(Helpers.MENU_NOT_FETCHED);
+
+        mMealPagerAdapter = new MealPagerAdapter(getChildFragmentManager(), new MealFragment[] { breakfast, lunch, dinner });
+
+        mViewPager = (ViewPager) v.findViewById(R.id.pager);
+        mViewPager.setAdapter(mMealPagerAdapter);
+
+        return v;
+    }
+
+    public void fetchMenu() {
+        DiningHall diningHall = (DiningHall)getArguments().getSerializable(ARG_DINING_HALL);
+
         // Get the last input date or use today
         Calendar rightNow = Calendar.getInstance();
         SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        final int year = settings.getInt("menuYear",rightNow.get(Calendar.YEAR));
-        final int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
-        final int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
+        int month = settings.getInt(Helpers.MENU_MONTH, rightNow.get(Calendar.MONTH));
+        int day = settings.getInt(Helpers.MENU_DAY, rightNow.get(Calendar.DAY_OF_MONTH));
 
-        mView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        final Button dateButton = (Button) mView.findViewById(R.id.date_button);
-        dateButton.setText((month+1) + "/"
-                + day + "/" + year);
-        dateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerDialog dpd = new DatePickerDialog(mView.getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
-
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
-                                // save the input date in shared prefs
-                                SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = settings.edit();
-                                editor.putInt("menuYear", year);
-                                editor.putInt("menuMonth", monthOfYear);
-                                editor.putInt("menuDay", dayOfMonth);
-
-                                // Commit the edits!
-                                editor.commit();
-
-                                dateButton.setText((monthOfYear+1) + "/"
-                                        + dayOfMonth + "/" + year);
-
-                                fetchMenu();
-                            }
-                        }, year, month, day);
-                dpd.show();
-            }
-        });
-
-        return mView;
+        FetchMenuTask fetchMenu = new FetchMenuTask(this);
+        fetchMenu.execute(String.valueOf(month + 1), String.valueOf(day), diningHall.getId().toString());
     }
 
     @Override
@@ -100,19 +69,7 @@ public class DiningHallFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(diningHall);
     }
 
-    public void fetchMenu() {
-        DiningHall diningHall = (DiningHall)getArguments().getSerializable(ARG_DINING_HALL);
-
-        // Get the last input date or use today
-        Calendar rightNow = Calendar.getInstance();
-        SharedPreferences settings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        int month = settings.getInt("menuMonth", rightNow.get(Calendar.MONTH));
-        int day = settings.getInt("menuDay", rightNow.get(Calendar.DAY_OF_MONTH));
-
-        FetchMenuTask fetchMenu = new FetchMenuTask(getActivity(), this.getView());
-        fetchMenu.execute(String.valueOf(month+1),String.valueOf(day),diningHall.getId().toString());
-
-        TextView diningHallTextView = (TextView)mView.findViewById(R.id.diningHallTextView);
-        diningHallTextView.setText("Loading menu data...");
+    public MealPagerAdapter getPagerAdapter() {
+        return mMealPagerAdapter;
     }
 }
