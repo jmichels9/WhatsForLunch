@@ -1,5 +1,6 @@
 package net.jmichels.whatsforlunch;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -51,9 +52,8 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
-    private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private int mCurrentSelectedPosition;
 
     public NavigationDrawerFragment() {
     }
@@ -67,12 +67,8 @@ public class NavigationDrawerFragment extends Fragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
-
         // Select either the default item (0) or the last selected item.
+        mCurrentSelectedPosition = getActivity().getPreferences(Context.MODE_PRIVATE).getInt(Helpers.DINING_HALL_POSITION, 0);
         selectItem(mCurrentSelectedPosition);
     }
 
@@ -166,7 +162,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
+        if (!mUserLearnedDrawer) {
             mDrawerLayout.openDrawer(mFragmentContainerView);
         }
 
@@ -183,6 +179,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
+        getActivity().getPreferences(Context.MODE_PRIVATE).edit().putInt(Helpers.DINING_HALL_POSITION,position).commit();
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
@@ -208,12 +205,6 @@ public class NavigationDrawerFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
     }
 
     @Override
